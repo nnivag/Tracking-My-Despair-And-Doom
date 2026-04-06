@@ -3,36 +3,32 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>✨ Streak Calendar ✨</title>
-  <!-- font loads async so it never blocks render -->
+  <title>✨ Tracking My Shi ✨</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Pacifico&display=swap"
         rel="stylesheet" media="print" onload="this.media='all'"/>
   <style>
-    /* ── variables ─────────────────────────────────────────────────────────── */
+    /* ── Pastel Pink & Sparkly Variables ─────────────────────────────────────── */
     :root {
-      --bg:       #1a0a14;
-      --surface:  #2d1124;
-      --surface2: #3a1830;
-      --border:   #6d2f5a;
-      --accent:   #ff6eb4;
-      --accent2:  #ff9de2;
-      --accent3:  #c94fae;
-      --pink-lt:  #ffb3e0;
-      --pink-hi:  #ff85cc;
-      --text:     #ffe8f5;
-      --muted:    #a06080;
-      --r:        10px;
+      --bg:       #fff0f6; 
+      --surface:  rgba(255, 255, 255, 0.85); /* Frosted Glass */
+      --border:   rgba(255, 179, 224, 0.4);
+      --accent:   #ffb3e0; 
+      --accent2:  #ff85cc; 
+      --accent3:  #e0c3fc; 
+      --text:     #7a4962; 
+      --muted:    #c299b0;
+      --r:        16px;
     }
 
-    /* ── reset / base ──────────────────────────────────────────────────────── */
+    /* ── Reset / Base ──────────────────────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: 'Quicksand', Georgia, sans-serif;
+      font-family: 'Quicksand', sans-serif;
       min-height: 100vh;
       padding: 40px 20px 80px;
       display: flex;
@@ -41,32 +37,39 @@
       overflow-x: hidden;
     }
 
-    /* ── ambient glow (CSS only — no JS needed) ────────────────────────────── */
+    /* ── Dynamic Shimmer Background ────────────────────────────────────────── */
     body::before {
       content: '';
       position: fixed; inset: 0;
-      background:
-        radial-gradient(ellipse at 20% 20%, #5c0a3a55 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 80%, #8b0a5e44 0%, transparent 50%),
-        radial-gradient(ellipse at 50% 50%, #3a0a2a33 0%, transparent 70%);
+      /* Layered gradients to create a "cloudy pink sky" look */
+      background: 
+        radial-gradient(circle at 10% 20%, #fff0f6 0%, transparent 40%),
+        radial-gradient(circle at 90% 10%, #ffd1e6 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, #fff9fc 0%, transparent 70%),
+        radial-gradient(circle at 80% 80%, #f3ebff 0%, transparent 50%),
+        radial-gradient(circle at 20% 80%, #ffdef0 0%, transparent 40%);
       pointer-events: none;
       z-index: 0;
+      animation: bgShimmer 15s ease-in-out infinite alternate;
     }
 
-    /* sparkle canvas sits behind content */
+    @keyframes bgShimmer {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.1); }
+    }
+
     #sparkleCanvas {
       position: fixed; inset: 0;
       pointer-events: none;
       z-index: 1;
     }
 
-    /* everything content-level sits above canvas */
     header, .input-row, .habits-wrap, .save-bar {
       position: relative;
       z-index: 2;
     }
 
-    /* ── header ────────────────────────────────────────────────────────────── */
+    /* ── Header ────────────────────────────────────────────────────────────── */
     header {
       width: 100%; max-width: 860px;
       margin-bottom: 28px;
@@ -77,262 +80,130 @@
 
     h1 {
       font-family: 'Pacifico', cursive;
-      font-size: clamp(2rem, 6vw, 3.4rem);
-      background: linear-gradient(135deg, #ff6eb4, #ffb3e0, #ff9de2);
+      font-size: clamp(2.2rem, 6vw, 3.6rem);
+      background: linear-gradient(135deg, #ffb3e0, #ff85cc, #e0c3fc);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      background-clip: text;
-      filter: drop-shadow(0 0 18px #ff6eb466);
+      filter: drop-shadow(0 0 15px rgba(255, 179, 224, 0.8));
       line-height: 1.1;
     }
 
     .tagline {
-      font-size: .74rem; color: var(--muted);
-      margin-top: 5px; letter-spacing: .12em; text-transform: uppercase;
+      font-size: .85rem; color: var(--muted);
+      margin-top: 8px; font-weight: 700; letter-spacing: 0.05em;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
     }
 
-    /* ── stat cards ────────────────────────────────────────────────────────── */
+    /* ── Stat Cards ────────────────────────────────────────────────────────── */
     .stats { display: flex; gap: 12px; flex-wrap: wrap; }
 
     .stat {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--r); padding: 12px 20px;
-      text-align: center; min-width: 86px;
-      box-shadow: 0 0 12px #ff6eb422;
+      background: var(--surface); 
+      backdrop-filter: blur(8px);
+      border: 2px solid var(--border);
+      border-radius: var(--r); padding: 12px 18px;
+      text-align: center; min-width: 90px;
+      box-shadow: 0 8px 20px rgba(255, 179, 224, 0.2);
     }
 
     .stat .n {
       font-size: 1.8rem; font-weight: 700; line-height: 1;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: var(--accent2);
+      filter: drop-shadow(0 0 8px #ffb3e0);
     }
 
-    .stat .lbl {
-      font-size: .62rem; color: var(--muted);
-      text-transform: uppercase; letter-spacing: .1em; margin-top: 4px;
-    }
+    .stat .lbl { font-size: .65rem; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; font-weight: 700; }
 
-    /* ── save bar ──────────────────────────────────────────────────────────── */
-    .save-bar {
-      width: 100%; max-width: 860px;
-      margin-bottom: 12px; min-height: 18px;
-      font-size: .72rem; text-align: right;
-      letter-spacing: .05em; color: var(--muted);
-      transition: color .3s;
-    }
-    .save-bar.saving { color: var(--accent2); }
-    .save-bar.saved  { color: #ff9de2; }
-    .save-bar.error  { color: #ffb3d1; }
+    /* ── Save Bar ──────────────────────────────────────────────────────────── */
+    .save-bar { width: 100%; max-width: 860px; margin-bottom: 12px; font-size: .75rem; text-align: right; font-weight: 700; color: var(--muted); }
 
-    /* ── input row ─────────────────────────────────────────────────────────── */
-    .input-row {
-      display: flex; gap: 10px;
-      width: 100%; max-width: 860px;
-      margin-bottom: 28px;
-    }
+    /* ── Input Row ─────────────────────────────────────────────────────────── */
+    .input-row { display: flex; gap: 10px; width: 100%; max-width: 860px; margin-bottom: 28px; }
 
     .input-row input {
       flex: 1;
-      background: var(--surface); border: 1px solid var(--border);
+      background: var(--surface); border: 2px solid var(--border);
       border-radius: var(--r); color: var(--text);
       font-family: inherit; font-size: .95rem; font-weight: 600;
-      padding: 12px 16px; outline: none;
-      transition: border-color .2s, box-shadow .2s;
+      padding: 14px 18px; outline: none;
+      backdrop-filter: blur(8px);
+      transition: all .2s ease;
     }
-    .input-row input::placeholder { color: var(--muted); }
-    .input-row input:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 14px #ff6eb433;
-    }
+    .input-row input:focus { border-color: var(--accent); box-shadow: 0 0 20px rgba(255, 179, 224, 0.4); }
 
     .emoji-sel {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--r); color: var(--text);
-      padding: 0 10px; font-size: 1.1rem; cursor: pointer; outline: none;
+      background: var(--surface); border: 2px solid var(--border);
+      border-radius: var(--r); padding: 0 12px; font-size: 1.2rem; cursor: pointer; outline: none;
     }
 
     .btn-add {
-      background: linear-gradient(135deg, var(--accent), var(--accent3));
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
       color: #fff; border: none; border-radius: var(--r);
-      font-family: inherit; font-size: .9rem; font-weight: 700;
-      padding: 12px 22px; cursor: pointer; white-space: nowrap;
-      box-shadow: 0 4px 20px #ff6eb455;
-      transition: transform .1s, box-shadow .2s, opacity .15s;
+      font-weight: 700; padding: 12px 24px; cursor: pointer;
+      box-shadow: 0 4px 15px rgba(255, 133, 204, 0.4);
+      transition: all .2s ease;
     }
-    .btn-add:hover  { transform: translateY(-2px); box-shadow: 0 6px 28px #ff6eb477; }
-    .btn-add:active { transform: translateY(0); }
+    .btn-add:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 133, 204, 0.6); }
 
-    /* ── habits list ───────────────────────────────────────────────────────── */
-    .habits-wrap {
-      width: 100%; max-width: 860px;
-      display: flex; flex-direction: column; gap: 24px;
-    }
+    /* ── Habit Cards ───────────────────────────────────────────────────────── */
+    .habits-wrap { width: 100%; max-width: 860px; display: flex; flex-direction: column; gap: 24px; }
 
     .habit-card {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 14px; overflow: hidden;
-      box-shadow: 0 4px 24px #ff6eb41a;
-      animation: pop .3s cubic-bezier(.22,.68,0,1.2);
+      background: var(--surface); 
+      backdrop-filter: blur(12px);
+      border: 2px solid var(--border);
+      border-radius: 24px; overflow: hidden;
+      box-shadow: 0 15px 35px rgba(255, 222, 240, 0.6);
+      animation: pop .4s cubic-bezier(.17,.67,.83,.67);
     }
-    @keyframes pop {
-      from { opacity: 0; transform: translateY(14px) scale(.98); }
-      to   { opacity: 1; transform: none; }
-    }
+
+    @keyframes pop { from { opacity: 0; transform: translateY(10px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
     .card-head {
-      display: flex; align-items: center;
-      justify-content: space-between; gap: 10px;
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--border);
-      background: linear-gradient(90deg, #3a1830, #2d1124);
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      padding: 20px; border-bottom: 2px solid var(--border);
     }
-
-    .head-left { display: flex; align-items: center; gap: 12px; }
 
     .hicon {
-      width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
-      background: linear-gradient(135deg, var(--accent), var(--accent3));
+      width: 44px; height: 44px; border-radius: 12px;
+      background: linear-gradient(135deg, #fff, #ffdef0);
       display: flex; align-items: center; justify-content: center;
-      font-size: 1.2rem; box-shadow: 0 2px 12px #ff6eb455;
+      font-size: 1.3rem; box-shadow: 0 4px 10px rgba(255, 179, 224, 0.3);
     }
-
-    .hname { font-size: 1.05rem; font-weight: 700; }
-    .hbadge { font-size: .71rem; color: var(--muted); margin-top: 3px; }
-
-    .head-right { display: flex; gap: 8px; align-items: center; }
 
     .btn-today {
-      background: var(--surface2); border: 1px solid var(--border);
-      border-radius: 8px; color: var(--text);
-      font-family: inherit; font-size: .8rem; font-weight: 700;
-      padding: 7px 16px; cursor: pointer;
-      transition: border-color .2s, color .2s, box-shadow .2s;
-    }
-    .btn-today:hover:not(.done-btn) {
-      border-color: var(--accent); color: var(--accent);
-      box-shadow: 0 0 10px #ff6eb433;
+      background: white; border: 2px solid #ffdef0;
+      border-radius: 10px; color: var(--text);
+      font-size: .85rem; font-weight: 700;
+      padding: 8px 18px; cursor: pointer; transition: all 0.2s;
     }
     .btn-today.done-btn {
-      background: linear-gradient(135deg, #5c0a3a, #3a0a2a);
-      border-color: var(--accent); color: var(--accent);
-      box-shadow: 0 0 12px #ff6eb444;
+      background: linear-gradient(135deg, var(--accent2), var(--accent));
+      border-color: var(--accent2); color: white;
+      box-shadow: 0 0 15px rgba(255, 133, 204, 0.5);
     }
 
-    .btn-del {
-      background: none; border: 1px solid var(--border);
-      border-radius: 8px; color: var(--muted);
-      padding: 6px 11px; font-size: .9rem; cursor: pointer;
-      transition: border-color .15s, color .15s;
-    }
-    .btn-del:hover { border-color: #ffb3d1; color: #ffb3d1; }
-
-    /* ── calendar ──────────────────────────────────────────────────────────── */
-    .cal { padding: 18px 20px 22px; }
-
-    .cal-nav {
-      display: flex; align-items: center;
-      justify-content: space-between; margin-bottom: 14px;
-    }
-
-    .cal-month {
-      font-size: .78rem; font-weight: 700; letter-spacing: .1em;
-      text-transform: uppercase; color: var(--accent2);
-    }
-
-    .cal-arrows { display: flex; gap: 6px; }
-
-    .btn-nav {
-      background: var(--surface2); border: 1px solid var(--border);
-      border-radius: 6px; color: var(--muted);
-      padding: 3px 10px; font-size: 1rem; cursor: pointer;
-      transition: border-color .15s, color .15s;
-    }
-    .btn-nav:hover { border-color: var(--accent); color: var(--accent); }
-
-    .day-labels, .days-grid {
-      display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px;
-    }
-    .day-labels { margin-bottom: 6px; }
-
-    .dlbl {
-      font-size: .59rem; color: var(--muted);
-      text-align: center; text-transform: uppercase;
-      letter-spacing: .06em; font-weight: 700;
-    }
+    /* ── Calendar Grid ─────────────────────────────────────────────────────── */
+    .cal { padding: 20px; }
+    .cal-month { color: #cc8ab1; font-weight: 800; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em;}
 
     .day {
-      aspect-ratio: 1; border-radius: 8px;
-      background: var(--surface2); border: 1px solid transparent;
+      aspect-ratio: 1; border-radius: 10px;
+      background: rgba(255, 255, 255, 0.5); border: 1px solid #ffebf5;
       cursor: pointer; position: relative;
       display: flex; align-items: center; justify-content: center;
-      transition: transform .12s, border-color .12s, box-shadow .12s;
+      transition: all 0.2s;
     }
-    .day:hover:not(.empty):not(.future) {
-      border-color: var(--accent); transform: scale(1.12);
-      z-index: 2; box-shadow: 0 0 14px #ff6eb466;
-    }
-    .day .dn {
-      font-size: .6rem; font-weight: 700; color: var(--muted);
-      position: absolute; top: 3px; right: 5px; line-height: 1;
-    }
+    .day:hover:not(.empty):not(.future) { background: #fff; transform: scale(1.1); z-index: 2; box-shadow: 0 0 10px var(--accent); }
     .day.checked {
-      background: linear-gradient(135deg, #ff6eb4, #c94fae);
-      box-shadow: 0 0 10px #ff6eb466, inset 0 0 8px #ffffff22;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-color: var(--accent2);
+      box-shadow: 0 4px 12px rgba(255, 179, 224, 0.6);
     }
-    .day.checked .dn { color: #fff; }
-    .day.checked::after {
-      content: '✦';
-      position: absolute; top: 1px; left: 3px;
-      font-size: .5rem; color: #ffb3e099;
-      animation: twinkle 2s ease-in-out infinite;
-    }
-    @keyframes twinkle {
-      0%,100% { opacity: .4; transform: scale(.8); }
-      50%      { opacity: 1;  transform: scale(1.2); }
-    }
-    .day.today  { border-color: var(--pink-hi) !important; }
-    .day.today .dn { color: var(--pink-hi); }
-    .day.future { opacity: .25; cursor: not-allowed; }
-    .day.empty  { background: transparent; cursor: default; border: none; }
+    .day.checked .dn { color: white; }
+    .day.today { border: 2px solid var(--accent2) !important; }
+    .day .dn { font-size: .65rem; font-weight: 700; color: #c299b0; position: absolute; bottom: 3px; right: 4px;}
 
-    /* tooltip */
-    .day[data-tip]:hover::before {
-      content: attr(data-tip);
-      position: absolute; bottom: calc(100% + 6px); left: 50%;
-      transform: translateX(-50%);
-      background: var(--surface2); border: 1px solid var(--border);
-      color: var(--accent2); font-size: .6rem; font-weight: 700;
-      white-space: nowrap; padding: 3px 8px; border-radius: 6px;
-      pointer-events: none; z-index: 10;
-    }
-
-    /* burst overlay */
-    .burst {
-      position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
-      background: radial-gradient(circle, #ffb3e088, #ff6eb455, transparent);
-      animation: burstOut .4s ease forwards;
-    }
-    @keyframes burstOut {
-      from { transform: scale(1); opacity: 1; }
-      to   { transform: scale(3); opacity: 0; }
-    }
-
-    /* ── empty state ───────────────────────────────────────────────────────── */
-    .empty-state {
-      text-align: center; padding: 70px 20px; color: var(--muted);
-    }
-    .empty-state .ei {
-      font-size: 3.5rem; margin-bottom: 14px;
-      filter: drop-shadow(0 0 16px #ff6eb466);
-      animation: float 3s ease-in-out infinite;
-    }
-    @keyframes float {
-      0%,100% { transform: translateY(0); }
-      50%      { transform: translateY(-8px); }
-    }
-    .empty-state h2 { font-size: 1.3rem; color: var(--accent2); margin-bottom: 8px; }
-    .empty-state p  { font-size: .8rem; }
   </style>
 </head>
 <body>
@@ -342,25 +213,22 @@
 <header>
   <div>
     <h1>✨ streak ✨</h1>
-    <p class="tagline">your daily habit tracker · sparkle edition</p>
+    <p class="tagline">Tracking My Shi (Ong Please Lock In)</p>
   </div>
   <div class="stats">
     <div class="stat"><div class="n" id="sHabits">0</div><div class="lbl">Habits</div></div>
-    <div class="stat"><div class="n" id="sBest">0</div><div class="lbl">Best Streak</div></div>
-    <div class="stat"><div class="n" id="sToday">0</div><div class="lbl">Done Today</div></div>
+    <div class="stat"><div class="n" id="sBest">0</div><div class="lbl">Best</div></div>
+    <div class="stat"><div class="n" id="sToday">0</div><div class="lbl">Today</div></div>
   </div>
 </header>
 
 <div class="save-bar" id="saveBar"></div>
 
 <div class="input-row">
-  <input id="habitInput" type="text" maxlength="50"
-    placeholder="New habit — e.g. Read 30 min, Drink water, Meditate…"/>
+  <input id="habitInput" type="text" maxlength="50" placeholder="Locked in? Type habit here..."/>
   <select id="habitEmoji" class="emoji-sel">
-    <option>✨</option><option>🌸</option><option>💖</option><option>🦋</option>
-    <option>🌺</option><option>📚</option><option>🏃</option><option>🧘</option>
-    <option>💧</option><option>🎀</option><option>🌙</option><option>🌷</option>
-    <option>💪</option><option>🎯</option><option>🍓</option><option>🦄</option>
+    <option>🌸</option><option>🎀</option><option>⭐</option><option>💖</option>
+    <option>🍓</option><option>🧸</option><option>🌷</option><option>🦄</option>
   </select>
   <button class="btn-add" id="addBtn">+ Add ✨</button>
 </div>
@@ -370,7 +238,6 @@
 <script>
 "use strict";
 
-// ── sparkles ──────────────────────────────────────────────────────────────────
 const canvas = document.getElementById('sparkleCanvas');
 const ctx    = canvas.getContext('2d');
 let sparks   = [];
@@ -382,122 +249,95 @@ function resizeCanvas() {
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 
-const PINK = ['#ff6eb4','#ffb3e0','#ff9de2','#ffffff','#c94fae','#ff85cc'];
+// Lighter, glowier palette
+const PINK_SPARKLES = ['#ffffff', '#fff0f6', '#ffdef0', '#ffb3e0', '#ffe3f2', '#ff85cc'];
 
 function mkSpark(x, y, burst) {
   return {
     x:  x  ?? Math.random() * window.innerWidth,
     y:  y  ?? Math.random() * window.innerHeight,
-    r:  Math.random() * 1.8 + 0.4,
+    r:  Math.random() * 2.5 + 0.3,
     a:  Math.random(),
-    da: (Math.random() * 0.01 + 0.004) * (Math.random() < .5 ? 1 : -1),
-    c:  PINK[Math.floor(Math.random() * PINK.length)],
-    vx: burst ? (Math.random() - .5) * 6 : 0,
-    vy: burst ? (Math.random() - .5) * 6 : 0,
-    life: burst ? 1 : -1
+    da: (Math.random() * 0.015 + 0.002), 
+    c:  PINK_SPARKLES[Math.floor(Math.random() * PINK_SPARKLES.length)],
+    vx: burst ? (Math.random() - .5) * 10 : 0,
+    vy: burst ? (Math.random() - .5) * 10 : 0,
+    life: burst ? 1 : -1,
+    angle: Math.random() * Math.PI * 2
   };
 }
 
-for (let i = 0; i < 110; i++) sparks.push(mkSpark());
+for (let i = 0; i < 180; i++) sparks.push(mkSpark());
 
-function drawStar(x, y, r, alpha, color) {
+function drawStar(s) {
   ctx.save();
-  ctx.globalAlpha = Math.max(0, Math.min(1, alpha)) * .75;
-  ctx.fillStyle   = color;
-  ctx.shadowBlur  = 7;
-  ctx.shadowColor = color;
+  ctx.globalAlpha = s.life >= 0 ? s.life : s.a;
+  ctx.fillStyle   = s.c;
+  
+  // High intensity glow settings
+  ctx.shadowBlur = 10;
+  ctx.shadowColor = s.c;
+  ctx.globalCompositeOperation = 'lighter'; // This makes overlapping sparks glow brighter
+  
   ctx.beginPath();
-  for (let i = 0; i < 8; i++) {
-    const a   = (i * Math.PI) / 4;
-    const rad = i % 2 === 0 ? r * 2.5 : r * .9;
-    i === 0
-      ? ctx.moveTo(x + rad * Math.cos(a), y + rad * Math.sin(a))
-      : ctx.lineTo(x + rad * Math.cos(a), y + rad * Math.sin(a));
+  // Draw small 4-pointed stars occasionally for extra sparkle
+  if (s.r > 2) {
+    for (let i = 0; i < 4; i++) {
+        ctx.lineTo(s.x + Math.cos(s.angle + i * Math.PI / 2) * s.r * 2, 
+                   s.y + Math.sin(s.angle + i * Math.PI / 2) * s.r * 2);
+        ctx.lineTo(s.x + Math.cos(s.angle + i * Math.PI / 2 + Math.PI / 4) * s.r * 0.5, 
+                   s.y + Math.sin(s.angle + i * Math.PI / 2 + Math.PI / 4) * s.r * 0.5);
+    }
+  } else {
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
   }
-  ctx.closePath();
+  
   ctx.fill();
   ctx.restore();
 }
 
 function animLoop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  sparks = sparks.filter(s => s.life < 0 || s.life > 0);
+  sparks = sparks.filter(s => s.life < 0 || s.life > 0.01);
   for (const s of sparks) {
     if (s.life >= 0) {
-      s.x += s.vx; s.y += s.vy; s.life -= 0.03;
-      drawStar(s.x, s.y, s.r, s.life, s.c);
+      s.x += s.vx; s.y += s.vy; s.life -= 0.02;
+      s.angle += 0.1;
+      drawStar(s);
     } else {
       s.a += s.da;
-      if (s.a > 1 || s.a < 0) s.da *= -1;
-      drawStar(s.x, s.y, s.r, s.a, s.c);
+      if (s.a > 0.8 || s.a < 0.1) s.da *= -1;
+      drawStar(s);
     }
   }
   requestAnimationFrame(animLoop);
 }
-animLoop();   // start after everything is defined
+animLoop();
 
 function burstAt(ex, ey) {
-  for (let i = 0; i < 14; i++) sparks.push(mkSpark(ex, ey, true));
+  for (let i = 0; i < 25; i++) sparks.push(mkSpark(ex, ey, true));
 }
 
-// ── persistence ───────────────────────────────────────────────────────────────
-const KEY = 'streak_habits_v3';
-let habits     = [];
+// ── App Logic ──────────────────────────────────────────────────────────────
+const KEY = 'streak_habits_v4';
+let habits = [];
 let viewMonths = {};
-let saveTimer  = null;
 
 async function loadData() {
-  // Option A: Artifact cloud storage (Claude.ai published artifacts)
-  if (window.storage) {
-    try {
-      const r = await window.storage.get(KEY);
-      if (r && r.value) {
-        habits = JSON.parse(r.value);
-        setBar('✦ Habits loaded!', 'saved');
-        setTimeout(() => setBar(''), 2000);
-        return;
-      }
-    } catch (_) {}
-  }
-  // Option B: localStorage (VS Code Live Server / any local browser)
-  try {
-    const raw = localStorage.getItem(KEY);
-    if (raw) habits = JSON.parse(raw);
-  } catch (_) {}
+  const raw = localStorage.getItem(KEY);
+  if (raw) habits = JSON.parse(raw);
 }
 
 async function save() {
-  setBar('saving…', 'saving');
-  const json = JSON.stringify(habits);
-  let ok = false;
-  if (window.storage) {
-    try { if (await window.storage.set(KEY, json)) ok = true; } catch (_) {}
-  }
-  try { localStorage.setItem(KEY, json); ok = true; } catch (_) {}
-  setBar(ok ? '✦ Saved!' : '⚠ Could not save', ok ? 'saved' : 'error');
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(() => setBar(''), 2000);
+  localStorage.setItem(KEY, JSON.stringify(habits));
 }
 
-function setBar(msg, cls = '') {
-  const el = document.getElementById('saveBar');
-  el.textContent = msg;
-  el.className   = 'save-bar ' + cls;
-}
+const DAYS_LBL = ['S','M','T','W','T','F','S'];
+const MON_LBL  = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
-// ── dates ─────────────────────────────────────────────────────────────────────
-const DAYS_LBL = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-const MON_LBL  = ['January','February','March','April','May','June',
-                  'July','August','September','October','November','December'];
+function pad(n) { return String(n).padStart(2, '0'); }
+function today() { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
 
-function pad(n)  { return String(n).padStart(2, '0'); }
-function today() {
-  const d = new Date();
-  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-}
-function ds(y, m, d) { return `${y}-${pad(m+1)}-${pad(d)}`; }
-
-// ── streak math ───────────────────────────────────────────────────────────────
 function curStreak(h) {
   const t = today(); let n = 0, d = new Date();
   for (;;) {
@@ -507,6 +347,7 @@ function curStreak(h) {
   }
   return n;
 }
+
 function bestStreak(h) {
   if (!h.logs.length) return 0;
   const s = [...h.logs].sort(); let best = 1, cur = 1;
@@ -516,183 +357,94 @@ function bestStreak(h) {
   return best;
 }
 
-// ── actions ───────────────────────────────────────────────────────────────────
 function addHabit() {
   const inp = document.getElementById('habitInput');
   const name = inp.value.trim();
-  if (!name) { inp.focus(); return; }
+  if (!name) return;
   const emoji = document.getElementById('habitEmoji').value;
-  const id    = Date.now().toString();
-  const now   = new Date();
-  habits.push({ id, name, emoji, logs: [], createdAt: today() });
-  viewMonths[id] = { y: now.getFullYear(), m: now.getMonth() };
+  habits.push({ id: Date.now().toString(), name, emoji, logs: [], createdAt: today() });
   inp.value = '';
-  save();
-  render();
-}
-
-function delHabit(id) {
-  if (!confirm('Delete this habit? 💔')) return;
-  habits = habits.filter(h => h.id !== id);
-  delete viewMonths[id];
-  save();
-  render();
+  save(); render();
 }
 
 function toggleDay(hid, date, cellEl) {
   if (date > today()) return;
   const h = habits.find(x => x.id === hid);
-  if (!h) return;
   const i = h.logs.indexOf(date);
   if (i === -1) {
     h.logs.push(date);
-    if (cellEl) {
-      const r = cellEl.getBoundingClientRect();
-      burstAt(r.left + r.width/2, r.top + r.height/2);
-      const b = document.createElement('div');
-      b.className = 'burst';
-      cellEl.appendChild(b);
-      setTimeout(() => b.remove(), 420);
-    }
-  } else {
-    h.logs.splice(i, 1);
-  }
-  save();
-  render();
+    const r = cellEl.getBoundingClientRect();
+    burstAt(r.left + r.width/2, r.top + r.height/2);
+  } else { h.logs.splice(i, 1); }
+  save(); render();
 }
 
 function logToday(hid) {
   const t = today();
   const h = habits.find(x => x.id === hid);
-  if (!h) return;
   const i = h.logs.indexOf(t);
-  if (i === -1) h.logs.push(t); else h.logs.splice(i, 1);
-  save();
-  render();
+  if (i === -1) { h.logs.push(t); burstAt(window.innerWidth/2, window.innerHeight/2); }
+  else h.logs.splice(i, 1);
+  save(); render();
 }
 
-function shiftMonth(hid, d) {
-  const vm = viewMonths[hid]; if (!vm) return;
-  vm.m += d;
-  if (vm.m > 11) { vm.m = 0; vm.y++; }
-  if (vm.m < 0)  { vm.m = 11; vm.y--; }
-  render();
-}
-
-// ── calendar HTML ──────────────────────────────────────────────────────────────
 function calHTML(h) {
-  if (!viewMonths[h.id]) {
-    const n = new Date();
-    viewMonths[h.id] = { y: n.getFullYear(), m: n.getMonth() };
-  }
+  if (!viewMonths[h.id]) { const n = new Date(); viewMonths[h.id] = { y: n.getFullYear(), m: n.getMonth() }; }
   const { y, m } = viewMonths[h.id];
-  const t  = today();
+  const t = today();
   const fd = new Date(y, m, 1).getDay();
   const nd = new Date(y, m+1, 0).getDate();
 
-  let rows = DAYS_LBL.map(d => `<div class="dlbl">${d}</div>`).join('');
+  let labels = DAYS_LBL.map(d => `<div style="text-align:center; color:#c299b0; font-size:.65rem; font-weight:700;">${d}</div>`).join('');
   let cells = '<div class="empty"></div>'.repeat(fd);
   for (let d = 1; d <= nd; d++) {
-    const date    = ds(y, m, d);
-    const checked = h.logs.includes(date);
-    const isToday = date === t;
-    const future  = date > t;
-    let cls = 'day';
-    if (checked) cls += ' checked';
-    if (isToday) cls += ' today';
-    if (future)  cls += ' future';
-    if (!future) cls = cls; // always has tip unless future
-    const tip = future ? '' : `data-tip="${date}"`;
-    cells += `<div class="${cls}" ${tip}
-      onclick="handleCell(event,'${h.id}','${date}')">
-      <span class="dn">${d}</span>
-    </div>`;
+    const date = `${y}-${pad(m+1)}-${pad(d)}`;
+    cells += `<div class="day ${h.logs.includes(date)?'checked':''} ${date===t?'today':''} ${date>t?'future':''}" 
+              onclick="toggleDay('${h.id}','${date}', this)"><span class="dn">${d}</span></div>`;
   }
 
   return `<div class="cal">
-    <div class="cal-nav">
-      <span class="cal-month">🌸 ${MON_LBL[m]} ${y}</span>
-      <div class="cal-arrows">
-        <button class="btn-nav" onclick="shiftMonth('${h.id}',-1)">‹</button>
-        <button class="btn-nav" onclick="shiftMonth('${h.id}',1)">›</button>
+    <div style="display:flex; justify-content:space-between; margin-bottom:15px; align-items:center;">
+      <span class="cal-month">${MON_LBL[m]} ${y}</span>
+      <div style="display:flex; gap:5px;">
+        <button style="padding:2px 8px; border-radius:5px; border:1px solid #ffdef0; background:#fff; cursor:pointer;" onclick="viewMonths['${h.id}'].m--; render();">‹</button>
+        <button style="padding:2px 8px; border-radius:5px; border:1px solid #ffdef0; background:#fff; cursor:pointer;" onclick="viewMonths['${h.id}'].m++; render();">›</button>
       </div>
     </div>
-    <div class="day-labels">${rows}</div>
-    <div class="days-grid">${cells}</div>
+    <div style="display:grid; grid-template-columns:repeat(7, 1fr); margin-bottom:8px;">${labels}</div>
+    <div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:6px;">${cells}</div>
   </div>`;
 }
 
-function handleCell(e, hid, date) { toggleDay(hid, date, e.currentTarget); }
-
-// ── render ────────────────────────────────────────────────────────────────────
 function render() {
   const wrap = document.getElementById('habitsWrap');
-  const t    = today();
-
-  if (!habits.length) {
-    wrap.innerHTML = `<div class="empty-state">
-      <div class="ei">🌸</div>
-      <h2>No habits yet!</h2>
-      <p>Add your first habit above and start sparkling ✨</p>
-    </div>`;
-    updateStats();
-    return;
-  }
-
-  wrap.innerHTML = '';
-  for (const h of habits) {
-    const streak = curStreak(h);
-    const logged = h.logs.includes(t);
-    const card   = document.createElement('div');
-    card.className = 'habit-card';
-    card.innerHTML = `
+  if (!habits.length) { wrap.innerHTML = `<div style="text-align:center; padding:60px;"><h2>🎀 Time to lock in?</h2><p>Add a habit to start.</p></div>`; updateStats(); return; }
+  wrap.innerHTML = habits.map(h => `
+    <div class="habit-card">
       <div class="card-head">
-        <div class="head-left">
+        <div style="display:flex; align-items:center; gap:12px;">
           <div class="hicon">${h.emoji}</div>
-          <div>
-            <div class="hname">${esc(h.name)}</div>
-            <div class="hbadge">✨ ${streak} day streak · ${h.logs.length} total</div>
-          </div>
+          <div><div class="hname">${h.name}</div><div class="hbadge">✨ ${curStreak(h)} day streak</div></div>
         </div>
-        <div class="head-right">
-          <button class="btn-today ${logged ? 'done-btn' : ''}" onclick="logToday('${h.id}')">
-            ${logged ? '💖 Done!' : '+ Today'}
-          </button>
-          <button class="btn-del" onclick="delHabit('${h.id}')">✕</button>
+        <div style="display:flex; gap:8px;">
+          <button class="btn-today ${h.logs.includes(today())?'done-btn':''}" onclick="logToday('${h.id}')">${h.logs.includes(today())?'💖 LOCKED':'Lock In'}</button>
+          <button style="background:none; border:none; color:#ffb3e0; cursor:pointer; font-size:1.2rem;" onclick="if(confirm('Delete?')) {habits=habits.filter(x=>x.id!=='${h.id}'); save(); render();}">✕</button>
         </div>
       </div>
-      ${calHTML(h)}`;
-    wrap.appendChild(card);
-  }
+      ${calHTML(h)}
+    </div>
+  `).join('');
   updateStats();
 }
 
 function updateStats() {
-  const t = today();
   document.getElementById('sHabits').textContent = habits.length;
-  document.getElementById('sBest').textContent   = habits.length ? Math.max(...habits.map(bestStreak)) : 0;
-  document.getElementById('sToday').textContent  = habits.filter(h => h.logs.includes(t)).length;
+  document.getElementById('sBest').textContent = habits.length ? Math.max(...habits.map(bestStreak)) : 0;
+  document.getElementById('sToday').textContent = habits.filter(h => h.logs.includes(today())).length;
 }
 
-function esc(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-// ── wire up ───────────────────────────────────────────────────────────────────
 document.getElementById('addBtn').addEventListener('click', addHabit);
-document.getElementById('habitInput').addEventListener('keydown', e => {
-  if (e.key === 'Enter') addHabit();
-});
-
-// ── boot ──────────────────────────────────────────────────────────────────────
-(async () => {
-  try {
-    await loadData();
-  } catch (e) {
-    console.warn('loadData error:', e);
-  }
-  render();
-})();
+loadData().then(render);
 </script>
 </body>
 </html>
